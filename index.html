@@ -1,1 +1,249 @@
-
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+<meta name="apple-mobile-web-app-title" content="Contacts"/>
+<meta name="theme-color" content="#0f5c49"/>
+<title>Social Contacts</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+:root{--c50:#e8f5f2;--c100:#b8e4d8;--c200:#6fc4aa;--c400:#1d8a70;--c600:#0f5c49;--c800:#073d30;}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f0f8f5;}
+#app{max-width:430px;margin:0 auto;background:#f0f8f5;min-height:100vh;display:flex;flex-direction:column;}
+#topbar{padding:52px 16px 10px;background:#0f5c49;display:flex;align-items:center;justify-content:space-between;}
+#topbar-title{font-size:17px;font-weight:500;color:#fff;}
+#topbar-actions{display:flex;gap:8px;}
+#tab-row{display:flex;background:#073d30;}
+.tab-item{flex:1;padding:9px 0;font-size:13px;font-weight:400;color:#fff;background:transparent;cursor:pointer;text-align:center;user-select:none;}
+.tab-item.active{background:#0f5c49;font-weight:500;}
+.content{flex:1;padding:12px;background:#f0f8f5;}
+.icon-btn{background:none;border:none;cursor:pointer;padding:4px;display:flex;align-items:center;justify-content:center;}
+.back-btn{background:none;border:none;cursor:pointer;font-size:13px;color:var(--c400);padding:0 0 16px 0;display:flex;align-items:center;line-height:1;gap:4px;}
+.search-row{display:flex;gap:8px;margin-bottom:12px;}
+.search-row input{flex:1;font-size:14px;padding:8px 12px;border:0.5px solid var(--c200);border-radius:8px;background:#fff;color:#1a1a1a;}
+.btn-add{font-size:13px;padding:8px 14px;background:var(--c400);color:#fff;border:none;border-radius:8px;cursor:pointer;white-space:nowrap;font-weight:500;}
+.btn-sm{font-size:12px;padding:5px 10px;border-radius:6px;cursor:pointer;font-weight:400;}
+.btn-outline{background:transparent;border:0.5px solid var(--c400);color:var(--c600);}
+.btn-danger-sm{background:transparent;border:0.5px solid #c0392b;color:#c0392b;font-size:12px;padding:5px 10px;border-radius:6px;cursor:pointer;}
+.btn-danger-full{background:#c0392b;color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:15px;font-weight:500;padding:13px;width:100%;margin-top:24px;}
+.btn-primary{background:var(--c400);color:#fff;border:none;}
+.contact-card{background:#fff;border:0.5px solid var(--c100);border-radius:12px;padding:11px 12px;margin-bottom:8px;display:flex;align-items:center;gap:12px;cursor:pointer;}
+.avatar{width:42px;height:42px;border-radius:50%;background:var(--c200);display:flex;align-items:center;justify-content:center;font-weight:500;font-size:14px;color:var(--c800);flex-shrink:0;overflow:hidden;}
+.avatar img{width:100%;height:100%;object-fit:cover;}
+.contact-name{font-size:15px;font-weight:500;color:#1a2e26;}
+.contact-sub{font-size:12px;color:var(--c600);margin-top:2px;}
+.group-badge{display:inline-block;font-size:11px;padding:2px 8px;border-radius:999px;background:var(--c100);color:var(--c800);margin:2px 2px 0 0;}
+.group-badge-lg{display:block;font-size:13px;padding:5px 12px;border-radius:999px;background:var(--c100);color:var(--c800);margin:4px 0;}
+.group-card{background:#fff;border:0.5px solid var(--c100);border-radius:12px;padding:12px 14px;margin-bottom:8px;cursor:pointer;}
+.group-card-row{display:flex;align-items:center;justify-content:space-between;}
+.group-name{font-size:15px;font-weight:500;color:#1a2e26;}
+.group-count{font-size:12px;color:var(--c600);margin-top:3px;}
+.form-group{margin-bottom:12px;}
+.form-group label{font-size:12px;color:var(--c600);display:block;margin-bottom:4px;}
+.form-group input,.form-group textarea,.form-group select{width:100%;font-size:16px;padding:8px 10px;border:0.5px solid var(--c200);border-radius:8px;background:#fff;color:#1a1a1a;}
+.form-group textarea{resize:vertical;min-height:70px;}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.form-actions{display:flex;gap:8px;margin-top:16px;padding-bottom:40px;}
+.photo-wrap{display:flex;align-items:center;gap:14px;margin-bottom:20px;margin-top:4px;}
+.photo-upload{width:70px;height:70px;border-radius:50%;border:1.5px dashed var(--c200);display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--c400);font-size:22px;background:#fff;overflow:hidden;flex-shrink:0;}
+.photo-upload img{width:100%;height:100%;object-fit:cover;}
+.detail-header{display:flex;align-items:center;gap:14px;margin-bottom:16px;margin-top:8px;}
+.detail-avatar{width:64px;height:64px;border-radius:50%;background:var(--c200);display:flex;align-items:center;justify-content:center;font-weight:500;font-size:20px;color:var(--c800);flex-shrink:0;overflow:hidden;}
+.detail-avatar img{width:100%;height:100%;object-fit:cover;}
+.detail-field{margin-bottom:10px;}
+.detail-field label{font-size:11px;color:var(--c400);text-transform:uppercase;letter-spacing:.05em;display:block;margin-bottom:2px;}
+.detail-field p{font-size:14px;color:#1a2e26;}
+.member-row{display:flex;align-items:center;justify-content:space-between;padding:9px 0;border-bottom:0.5px solid var(--c50);}
+.member-row:last-child{border-bottom:none;}
+.trash-btn{background:none;border:none;cursor:pointer;padding:4px;}
+.trash-icon{width:16px;height:16px;stroke:#c0392b;fill:none;stroke-width:2;}
+.section-label{font-size:11px;color:var(--c400);text-transform:uppercase;letter-spacing:.05em;margin:14px 0 6px;}
+.settings-row{display:flex;align-items:center;justify-content:space-between;padding:13px 0;border-bottom:0.5px solid var(--c100);}
+.settings-label{font-size:15px;color:#1a2e26;}
+.settings-sub{font-size:12px;color:var(--c600);margin-top:2px;}
+.empty{text-align:center;padding:40px 20px;color:var(--c400);font-size:14px;}
+.modal-bg{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,40,30,0.5);display:flex;align-items:center;justify-content:center;z-index:100;padding:20px;}
+.modal-box{background:#fff;border-radius:16px;padding:24px;width:100%;max-width:320px;}
+.modal-title{font-size:16px;font-weight:500;color:#1a2e26;margin-bottom:8px;}
+.modal-msg{font-size:14px;color:var(--c600);margin-bottom:20px;line-height:1.5;}
+.modal-actions{display:flex;gap:8px;justify-content:flex-end;}
+.inline-edit{font-size:17px;font-weight:500;color:#fff;background:transparent;border:none;border-bottom:1px solid rgba(255,255,255,0.4);outline:none;width:200px;}
+.detail-toprow{display:flex;align-items:center;justify-content:space-between;}
+.group-topbar{background:#0f5c49;border-radius:10px;margin-bottom:12px;padding:10px 14px;display:flex;align-items:center;justify-content:space-between;}
+</style>
+</head>
+<body>
+<div id="app">
+  <div id="topbar">
+    <span id="topbar-title">Contacts</span>
+    <div id="topbar-actions">
+      <button class="icon-btn" onclick="showSettings()">
+        <svg style="width:20px;height:20px;fill:none;stroke:#fff;stroke-width:2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+      </button>
+    </div>
+  </div>
+  <div id="tab-row">
+    <div class="tab-item active" id="tab-contacts" onclick="switchTab('contacts')">Contacts</div>
+    <div class="tab-item" id="tab-groups" onclick="switchTab('groups')">Groups</div>
+  </div>
+  <div class="content" id="main-content">
+    <div id="screen-contacts-list">
+      <div class="search-row">
+        <input type="text" placeholder="Search..." id="search-input" oninput="filterContacts()"/>
+        <button class="btn-add" onclick="showScreen('contact-form');prepareAddContact()">+ New</button>
+      </div>
+      <div id="contacts-container"></div>
+    </div>
+    <div id="screen-contact-detail" style="display:none">
+      <div class="detail-toprow">
+        <button class="back-btn" style="padding-bottom:0" onclick="showScreen('contacts-list')">&#8592; Back</button>
+        <button class="btn-sm btn-outline" onclick="editCurrentContact()">Edit</button>
+      </div>
+      <div class="detail-header">
+        <div class="detail-avatar" id="dd-avatar"></div>
+        <div><div style="font-size:18px;font-weight:500;color:#1a2e26" id="dd-name"></div><div style="font-size:13px;color:var(--c600)" id="dd-company"></div></div>
+      </div>
+      <div id="dd-fields"></div>
+      <button class="btn-danger-full" onclick="confirmDeleteContact()">Delete contact</button>
+    </div>
+    <div id="screen-contact-form" style="display:none">
+      <button class="back-btn" onclick="cancelContactForm()">&#8592; Back</button>
+      <div class="photo-wrap">
+        <div class="photo-upload" id="photo-btn" onclick="document.getElementById('photo-input').click()"><span>+</span></div>
+        <input type="file" id="photo-input" accept="image/*" style="display:none" onchange="handlePhoto(event)"/>
+        <div style="font-size:12px;color:var(--c600)">Tap circle to add photo</div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>First name</label><input type="text" id="ff-first" autocomplete="given-name"/></div>
+        <div class="form-group"><label>Last name</label><input type="text" id="ff-last" autocomplete="family-name"/></div>
+      </div>
+      <div class="form-group"><label>Company / Work</label><input type="text" id="ff-company" autocomplete="organization"/></div>
+      <div class="form-group">
+        <label>Phone <span style="font-size:11px;color:var(--c400);font-weight:400">+33 6 12 34 56 78</span></label>
+        <input type="tel" id="ff-phone" placeholder="+__ _ __ __ __ __" oninput="spacePhone(this)"/>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>City</label><input type="text" id="ff-city"/></div>
+        <div class="form-group"><label>Country</label><input type="text" id="ff-country"/></div>
+      </div>
+      <div class="form-group"><label>Email</label><input type="email" id="ff-email" autocomplete="email"/></div>
+      <div class="form-group"><label>Website</label><input type="url" id="ff-website"/></div>
+      <div class="section-label">Groups (max 3)</div>
+      <div class="form-group"><label>Group 1</label><select id="ff-g1"><option value="">— none —</option></select></div>
+      <div class="form-group"><label>Group 2</label><select id="ff-g2"><option value="">— none —</option></select></div>
+      <div class="form-group"><label>Group 3</label><select id="ff-g3"><option value="">— none —</option></select></div>
+      <div class="form-group"><label>Notes</label><textarea id="ff-notes"></textarea></div>
+      <div class="form-actions">
+        <button class="btn-sm btn-primary" onclick="saveContact()">Save</button>
+        <button class="btn-sm btn-outline" onclick="cancelContactForm()">Cancel</button>
+      </div>
+    </div>
+    <div id="screen-groups-list" style="display:none">
+      <div class="search-row">
+        <input type="text" placeholder="Search groups..." oninput="filterGroups(this.value)"/>
+        <button class="btn-add" onclick="showScreen('group-form');prepareAddGroup()">+ New</button>
+      </div>
+      <div id="groups-container"></div>
+    </div>
+    <div id="screen-group-detail" style="display:none">
+      <button class="back-btn" onclick="showScreen('groups-list');renderGroups()">&#8592; Back</button>
+      <div class="group-topbar">
+        <span id="gd-title-display" style="font-size:16px;font-weight:500;color:#fff;cursor:pointer;" onclick="startEditGroupName()"></span>
+        <input id="gd-title-input" class="inline-edit" style="display:none" onblur="finishEditGroupName()" onkeydown="if(event.key==='Enter')this.blur()"/>
+        <button class="icon-btn" onclick="showScreen('group-settings')">
+          <svg style="width:20px;height:20px;fill:none;stroke:#fff;stroke-width:2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+        </button>
+      </div>
+      <div id="gd-members"></div>
+    </div>
+    <div id="screen-group-settings" style="display:none">
+      <button class="back-btn" onclick="showScreen('group-detail');renderGroupDetail(currentGroupId)">&#8592; Back</button>
+      <div class="section-label">Group settings</div>
+      <div class="form-group"><label>Group name</label><input type="text" id="gs-name"/></div>
+      <div class="form-group"><label>Notes</label><textarea id="gs-notes"></textarea></div>
+      <div class="section-label" style="margin-top:20px">Move members to another group</div>
+      <div id="gs-members-select" style="margin-bottom:10px"></div>
+      <div class="form-group"><label>Move selected to</label><select id="gs-target-group"><option value="">— select group —</option></select></div>
+      <div class="form-actions">
+        <button class="btn-sm btn-primary" onclick="saveGroupSettings()">Save</button>
+        <button class="btn-sm btn-danger-sm" onclick="confirmDeleteGroup()">Delete group</button>
+      </div>
+    </div>
+    <div id="screen-group-form" style="display:none">
+      <button class="back-btn" onclick="showScreen('groups-list')">&#8592; Back</button>
+      <div class="form-group"><label>Group name</label><input type="text" id="gf-name"/></div>
+      <div class="form-group"><label>Notes</label><textarea id="gf-notes"></textarea></div>
+      <div class="form-actions">
+        <button class="btn-sm btn-primary" onclick="saveNewGroup()">Save</button>
+        <button class="btn-sm btn-outline" onclick="showScreen('groups-list')">Cancel</button>
+      </div>
+    </div>
+    <div id="screen-settings" style="display:none">
+      <button class="back-btn" onclick="backFromSettings()">&#8592; Back</button>
+      <div class="section-label">Data</div>
+      <div class="settings-row">
+        <div><div class="settings-label">Export to CSV</div><div class="settings-sub">Download all contacts as spreadsheet</div></div>
+        <button class="btn-sm btn-outline" onclick="exportCSV()">Export</button>
+      </div>
+      <div class="settings-row"><div><div class="settings-label">Contacts</div><div class="settings-sub" id="st-count"></div></div></div>
+      <div class="settings-row"><div><div class="settings-label">Groups</div><div class="settings-sub" id="st-gcount"></div></div></div>
+      <div style="margin-top:40px;font-size:12px;color:var(--c400);text-align:center;">Social Meeting Contacts v1.0</div>
+    </div>
+  </div>
+</div>
+<div id="modal-container" style="display:none">
+  <div class="modal-bg">
+    <div class="modal-box">
+      <div class="modal-title" id="modal-title"></div>
+      <div class="modal-msg" id="modal-msg"></div>
+      <div class="modal-actions" id="modal-actions"></div>
+    </div>
+  </div>
+</div>
+<script>
+let db={contacts:[],groups:[],nC:1,nG:1};
+let currentContactId=null,editingContactId=null,currentPhotoData=null,currentGroupId=null;
+let prevScreen=null,currentTab='contacts',modalCallback=null;
+function loadDB(){try{const s=localStorage.getItem('smdb_v1');if(s)db=JSON.parse(s);}catch(e){}}
+function saveDB(){try{localStorage.setItem('smdb_v1',JSON.stringify(db));}catch(e){}}
+function gname(id){const g=db.groups.find(x=>x.id===id);return g?g.name:'';}
+function inits(c){return((c.first||'')[0]||'')+((c.last||'')[0]||'');}
+function spacePhone(el){const pos=el.selectionStart;const old=el.value;const digits=old.replace(/[^\d+]/g,'');let out='',numCount=0;for(let i=0;i<digits.length;i++){const ch=digits[i];if(ch==='+'){out+=ch;}else{if(numCount>0&&numCount%2===0)out+=' ';out+=ch;numCount++;}}el.value=out;const np=Math.max(0,pos+(out.length-old.length));el.setSelectionRange(np,np);}
+function allScreens(){return['contacts-list','contact-detail','contact-form','groups-list','group-detail','group-settings','group-form','settings'];}
+function showScreen(name){allScreens().forEach(s=>{const el=document.getElementById('screen-'+s);if(el)el.style.display='none';});const el=document.getElementById('screen-'+name);if(el)el.style.display='block';document.getElementById('tab-row').style.display=(name==='settings')?'none':'flex';updateTopbar(name);if(name==='group-settings')showGroupSettings();window.scrollTo(0,0);}
+function updateTopbar(screen){const title=document.getElementById('topbar-title');const actions=document.getElementById('topbar-actions');const gear=`<button class="icon-btn" onclick="showSettings()"><svg style="width:20px;height:20px;fill:none;stroke:#fff;stroke-width:2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg></button>`;if(screen==='settings'){title.textContent='Settings';actions.innerHTML='';}else if(['contacts-list','contact-detail','contact-form'].includes(screen)){title.textContent='Contacts';actions.innerHTML=gear;}else{title.textContent='Groups';actions.innerHTML=gear;}}
+function switchTab(tab){currentTab=tab;document.getElementById('tab-contacts').className='tab-item'+(tab==='contacts'?' active':'');document.getElementById('tab-groups').className='tab-item'+(tab==='groups'?' active':'');if(tab==='contacts'){showScreen('contacts-list');renderContacts(db.contacts);}else{showScreen('groups-list');renderGroups();}}
+function renderContacts(list){const el=document.getElementById('contacts-container');if(!list.length){el.innerHTML='<div class="empty">No contacts yet.<br>Tap "+ New" to add one.</div>';return;}el.innerHTML=list.map(c=>{const badges=c.groups.filter(Boolean).map(g=>`<span class="group-badge">${gname(g)}</span>`).join('');return`<div class="contact-card" onclick="showContactDetail(${c.id})"><div class="avatar">${c.photo?`<img src="${c.photo}"/>`:(inits(c).toUpperCase()||'?')}</div><div style="flex:1;min-width:0"><div class="contact-name">${c.first} ${c.last}</div><div class="contact-sub">${c.company||c.city||''}</div><div>${badges}</div></div></div>`;}).join('');}
+function filterContacts(){const q=document.getElementById('search-input').value.toLowerCase();renderContacts(db.contacts.filter(c=>(c.first+' '+c.last+' '+(c.company||'')+' '+(c.city||'')).toLowerCase().includes(q)));}
+function showContactDetail(id){currentContactId=id;const c=db.contacts.find(x=>x.id===id);if(!c)return;showScreen('contact-detail');document.getElementById('dd-name').textContent=c.first+' '+c.last;document.getElementById('dd-company').textContent=c.company||'';const av=document.getElementById('dd-avatar');av.innerHTML=c.photo?`<img src="${c.photo}" style="width:100%;height:100%;object-fit:cover;border-radius:50%">`:(inits(c).toUpperCase()||'?');const fields=[['Phone',c.phone],['City',c.city],['Country',c.country],['Email',c.email],['Website',c.website],['Notes',c.notes]].filter(f=>f[1]);const grps=c.groups.filter(Boolean);const grpHtml=grps.length?`<div class="detail-field"><label>Groups</label>${grps.map(g=>`<span class="group-badge-lg">${gname(g)}</span>`).join('')}</div>`:'';document.getElementById('dd-fields').innerHTML=fields.map(([l,v])=>`<div class="detail-field"><label>${l}</label><p>${v}</p></div>`).join('')+grpHtml;}
+function editCurrentContact(){const c=db.contacts.find(x=>x.id===currentContactId);if(!c)return;editingContactId=c.id;currentPhotoData=c.photo||null;showScreen('contact-form');populateGroupSelects();document.getElementById('ff-first').value=c.first||'';document.getElementById('ff-last').value=c.last||'';document.getElementById('ff-company').value=c.company||'';document.getElementById('ff-phone').value=c.phone||'';document.getElementById('ff-city').value=c.city||'';document.getElementById('ff-country').value=c.country||'';document.getElementById('ff-email').value=c.email||'';document.getElementById('ff-website').value=c.website||'';document.getElementById('ff-notes').value=c.notes||'';document.getElementById('ff-g1').value=c.groups[0]||'';document.getElementById('ff-g2').value=c.groups[1]||'';document.getElementById('ff-g3').value=c.groups[2]||'';document.getElementById('photo-btn').innerHTML=c.photo?`<img src="${c.photo}" style="width:100%;height:100%;object-fit:cover;border-radius:50%">`:'<span>+</span>';}
+function prepareAddContact(){editingContactId=null;currentPhotoData=null;['ff-first','ff-last','ff-company','ff-phone','ff-city','ff-country','ff-email','ff-website','ff-notes'].forEach(id=>document.getElementById(id).value='');document.getElementById('photo-btn').innerHTML='<span>+</span>';populateGroupSelects();['ff-g1','ff-g2','ff-g3'].forEach(id=>document.getElementById(id).value='');}
+function populateGroupSelects(){const opts='<option value="">— none —</option>'+db.groups.map(g=>`<option value="${g.id}">${g.name}</option>`).join('');['ff-g1','ff-g2','ff-g3'].forEach(id=>{const s=document.getElementById(id);const v=s.value;s.innerHTML=opts;s.value=v;});}
+function handlePhoto(e){const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=ev=>{currentPhotoData=ev.target.result;document.getElementById('photo-btn').innerHTML=`<img src="${currentPhotoData}" style="width:100%;height:100%;object-fit:cover;border-radius:50%">`;};r.readAsDataURL(f);}
+function saveContact(){const first=document.getElementById('ff-first').value.trim();const last=document.getElementById('ff-last').value.trim();if(!first&&!last){showModal('Required','Please enter at least a first or last name.',[{label:'OK',fn:()=>{}}]);return;}const g1=parseInt(document.getElementById('ff-g1').value)||null;const g2=parseInt(document.getElementById('ff-g2').value)||null;const g3=parseInt(document.getElementById('ff-g3').value)||null;const contact={first,last,company:document.getElementById('ff-company').value.trim(),phone:document.getElementById('ff-phone').value.trim(),city:document.getElementById('ff-city').value.trim(),country:document.getElementById('ff-country').value.trim(),email:document.getElementById('ff-email').value.trim(),website:document.getElementById('ff-website').value.trim(),notes:document.getElementById('ff-notes').value.trim(),groups:[g1,g2,g3],photo:currentPhotoData};if(editingContactId){const idx=db.contacts.findIndex(x=>x.id===editingContactId);db.contacts[idx]={...contact,id:editingContactId};}else{contact.id=db.nC++;db.contacts.push(contact);}saveDB();showScreen('contacts-list');renderContacts(db.contacts);}
+function cancelContactForm(){if(editingContactId){showContactDetail(editingContactId);}else{showScreen('contacts-list');renderContacts(db.contacts);}}
+function confirmDeleteContact(){showModal('Delete contact','Remove this contact permanently?',[{label:'Delete',danger:true,fn:()=>{db.contacts=db.contacts.filter(x=>x.id!==currentContactId);saveDB();showScreen('contacts-list');renderContacts(db.contacts);}},{label:'Cancel',fn:()=>{}}]);}
+function renderGroups(filter){const el=document.getElementById('groups-container');let list=filter?db.groups.filter(g=>g.name.toLowerCase().includes(filter)):db.groups;if(!list.length){el.innerHTML='<div class="empty">No groups yet.</div>';return;}el.innerHTML=list.map(g=>{const cnt=db.contacts.filter(c=>c.groups.includes(g.id)).length;return`<div class="group-card" onclick="openGroupDetail(${g.id})"><div class="group-card-row"><div><div class="group-name">${g.name}</div><div class="group-count">${cnt} member${cnt!==1?'s':''}</div></div><svg width="16" height="16" fill="none" stroke="var(--c400)" stroke-width="2" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg></div></div>`;}).join('');}
+function filterGroups(q){renderGroups(q.toLowerCase());}
+function openGroupDetail(id){currentGroupId=id;showScreen('group-detail');renderGroupDetail(id);}
+function renderGroupDetail(id){const g=db.groups.find(x=>x.id===id);if(!g)return;document.getElementById('gd-title-display').textContent=g.name;document.getElementById('gd-title-display').style.display='inline';document.getElementById('gd-title-input').style.display='none';const members=db.contacts.filter(c=>c.groups.includes(id));const el=document.getElementById('gd-members');if(!members.length){el.innerHTML='<div class="empty" style="padding:20px 0">No members in this group.</div>';return;}el.innerHTML=members.map(c=>`<div class="member-row"><span style="font-size:14px;color:#1a2e26">${c.first} ${c.last}</span><button class="trash-btn" onclick="confirmRemoveMember(${c.id},${id})"><svg class="trash-icon" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4h6v2"/></svg></button></div>`).join('');}
+function startEditGroupName(){const g=db.groups.find(x=>x.id===currentGroupId);if(!g)return;document.getElementById('gd-title-display').style.display='none';const inp=document.getElementById('gd-title-input');inp.style.display='inline';inp.value=g.name;inp.focus();}
+function finishEditGroupName(){const val=document.getElementById('gd-title-input').value.trim();if(val){const g=db.groups.find(x=>x.id===currentGroupId);if(g){g.name=val;saveDB();}}document.getElementById('gd-title-display').textContent=val||document.getElementById('gd-title-display').textContent;document.getElementById('gd-title-input').style.display='none';document.getElementById('gd-title-display').style.display='inline';}
+function confirmRemoveMember(cid,gid){const c=db.contacts.find(x=>x.id===cid);if(!c)return;showModal('Remove from group',`Remove ${c.first} ${c.last} from this group?`,[{label:'Remove',danger:true,fn:()=>{c.groups=c.groups.map(g=>g===gid?null:g);saveDB();renderGroupDetail(gid);}},{label:'Cancel',fn:()=>{}}]);}
+function showGroupSettings(){const g=db.groups.find(x=>x.id===currentGroupId);if(!g)return;document.getElementById('gs-name').value=g.name;document.getElementById('gs-notes').value=g.notes||'';const members=db.contacts.filter(c=>c.groups.includes(currentGroupId));document.getElementById('gs-members-select').innerHTML=members.length?members.map(c=>`<label style="display:flex;align-items:center;gap:8px;font-size:14px;color:#1a2e26;padding:5px 0;cursor:pointer"><input type="checkbox" value="${c.id}" style="width:auto"/> ${c.first} ${c.last}</label>`).join(''):'<div style="font-size:13px;color:var(--c600)">No members to move.</div>';const others=db.groups.filter(x=>x.id!==currentGroupId);document.getElementById('gs-target-group').innerHTML='<option value="">— select group —</option>'+others.map(g=>`<option value="${g.id}">${g.name}</option>`).join('');}
+function saveGroupSettings(){const g=db.groups.find(x=>x.id===currentGroupId);if(!g)return;const newName=document.getElementById('gs-name').value.trim();if(newName)g.name=newName;g.notes=document.getElementById('gs-notes').value.trim();const targetId=parseInt(document.getElementById('gs-target-group').value)||null;if(targetId){const checked=[...document.querySelectorAll('#gs-members-select input:checked')].map(x=>parseInt(x.value));checked.forEach(cid=>{const c=db.contacts.find(x=>x.id===cid);if(!c)return;c.groups=c.groups.map(g=>g===currentGroupId?null:g);const slot=c.groups.findIndex(g=>!g);if(slot>=0)c.groups[slot]=targetId;});}saveDB();showScreen('group-detail');renderGroupDetail(currentGroupId);}
+function confirmDeleteGroup(){showModal('Delete group','Remove this group? Members will not be deleted.',[{label:'Delete',danger:true,fn:()=>{db.groups=db.groups.filter(g=>g.id!==currentGroupId);db.contacts.forEach(c=>{c.groups=c.groups.map(g=>g===currentGroupId?null:g);});saveDB();showScreen('groups-list');renderGroups();}},{label:'Cancel',fn:()=>{}}]);}
+function prepareAddGroup(){document.getElementById('gf-name').value='';document.getElementById('gf-notes').value='';}
+function saveNewGroup(){const name=document.getElementById('gf-name').value.trim();if(!name){showModal('Required','Please enter a group name.',[{label:'OK',fn:()=>{}}]);return;}db.groups.push({id:db.nG++,name,notes:document.getElementById('gf-notes').value.trim()});saveDB();showScreen('groups-list');renderGroups();}
+function showSettings(){prevScreen=currentTab;showScreen('settings');document.getElementById('st-count').textContent=db.contacts.length+' contacts';document.getElementById('st-gcount').textContent=db.groups.length+' groups';}
+function backFromSettings(){if(prevScreen==='groups')switchTab('groups');else switchTab('contacts');}
+function exportCSV(){const rows=[['First name','Last name','Company','Phone','City','Country','Email','Website','Group 1','Group 2','Group 3','Notes']];db.contacts.forEach(c=>rows.push([c.first,c.last,c.company,c.phone,c.city,c.country||'',c.email,c.website,gname(c.groups[0]),gname(c.groups[1]),gname(c.groups[2]),c.notes].map(v=>`"${(v||'').replace(/"/g,'""')}"`))); const csv=rows.map(r=>r.join(',')).join('\n');const a=document.createElement('a');a.href='data:text/csv;charset=utf-8,\uFEFF'+encodeURIComponent(csv);a.download='contacts.csv';a.click();}
+function showModal(title,msg,buttons){document.getElementById('modal-title').textContent=title;document.getElementById('modal-msg').textContent=msg;document.getElementById('modal-actions').innerHTML=buttons.map((b,i)=>`<button class="btn-sm ${b.danger?'btn-danger-sm':'btn-outline'}" onclick="modalBtn(${i})">${b.label}</button>`).join('');modalCallback=buttons;document.getElementById('modal-container').style.display='block';}
+function modalBtn(i){document.getElementById('modal-container').style.display='none';if(modalCallback&&modalCallback[i])modalCallback[i].fn();}
+loadDB();renderContacts(db.contacts);
+</script>
+</body>
+</html>
